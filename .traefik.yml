@@ -1,0 +1,17 @@
+displayName: crossover-blacklist
+type: middleware
+iconPath: .assets/icon.png
+
+import: github.com/kotalco/crossover-blacklist
+
+summary: "crossover blacklist"
+
+testData:
+  #APIKey to validate the request integrity
+  APIKey: "c7f1f03dde5fc0cab9aa53081ed08ab797ff54e52e6ff4e9a38e3e092ffcf7c5"
+  BlackList:
+      - "admin_addPeer"
+      - "admin_changeLogLevel"
+      - "admin_generateLogBloomCache"
+      - "eth_getBlockByNumber"
+
