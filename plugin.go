@@ -12,7 +12,6 @@ import (
 
 var (
 	defaultBlackList = []string{""}
-	defaultAPIKEY    = "c499a9cf54b4f5b8281762802b55462a8d020c835e6795ce4d1b6d268f6e32a5"
 )
 
 type Error struct {
@@ -30,7 +29,6 @@ type Config struct {
 func CreateConfig() *Config {
 	return &Config{
 		BlackList: defaultBlackList,
-		APIKey:    defaultAPIKEY,
 	}
 }
 
@@ -38,15 +36,11 @@ type CrossoverBlacklist struct {
 	next      http.Handler
 	name      string
 	client    http.Client
-	apiKey    string
 	blackList map[string]bool
 }
 
 // New created a new  plugin.
 func New(ctx context.Context, next http.Handler, config *Config, name string) (http.Handler, error) {
-	if len(config.APIKey) == 0 {
-		return nil, fmt.Errorf("APIKey can't be empty")
-	}
 	if len(config.BlackList) == 0 {
 		return nil, fmt.Errorf("blacklist empty")
 	}
@@ -57,7 +51,6 @@ func New(ctx context.Context, next http.Handler, config *Config, name string) (h
 		client: http.Client{
 			Timeout: 5 * time.Second,
 		},
-		apiKey:    config.APIKey,
 		blackList: make(map[string]bool),
 	}
 	for _, v := range config.BlackList {
