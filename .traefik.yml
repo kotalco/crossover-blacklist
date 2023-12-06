@@ -7,9 +7,9 @@ import: github.com/kotalco/crossover-blacklist
 summary: "crossover blacklist"
 
 testData:
-  BlackList:
-      - "admin_addPeer"
-      - "admin_changeLogLevel"
-      - "admin_generateLogBloomCache"
-      - "eth_getBlockByNumber"
+  Blacklist: ##method should be always lowercase
+      - "admin_addpeer"
+      - "admin_changeloglevel"
+      - "admin_generatelogbloomcache"
+      - "eth_getblockbynumber"
 
