@@ -7,11 +7,8 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"strings"
 	"time"
-)
-
-var (
-	defaultBlackList = []string{""}
 )
 
 type Error struct {
@@ -21,27 +18,24 @@ type Error struct {
 
 // Config holds configuration to passed to the plugin
 type Config struct {
-	BlackList []string
-	APIKey    string
+	Blacklist []string
 }
 
 // CreateConfig populates the config data object
 func CreateConfig() *Config {
-	return &Config{
-		BlackList: defaultBlackList,
-	}
+	return &Config{}
 }
 
 type CrossoverBlacklist struct {
 	next      http.Handler
 	name      string
 	client    http.Client
-	blackList map[string]bool
+	blacklist map[string]bool
 }
 
 // New created a new  plugin.
 func New(ctx context.Context, next http.Handler, config *Config, name string) (http.Handler, error) {
-	if len(config.BlackList) == 0 {
+	if len(config.Blacklist) == 0 {
 		return nil, fmt.Errorf("blacklist empty")
 	}
 
@@ -51,10 +45,10 @@ func New(ctx context.Context, next http.Handler, config *Config, name string) (h
 		client: http.Client{
 			Timeout: 5 * time.Second,
 		},
-		blackList: make(map[string]bool),
+		blacklist: make(map[string]bool),
 	}
-	for _, v := range config.BlackList {
-		requestHandler.blackList[v] = true
+	for _, v := range config.Blacklist {
+		requestHandler.blacklist[v] = true
 	}
 
 	return requestHandler, nil
@@ -110,10 +104,10 @@ func (a *CrossoverBlacklist) blacklisted(req *http.Request) *Error {
 		}
 		//validate array of requests
 		for _, object := range multipleObjects {
-			_, ok := a.blackList[object.Method]
+			_, ok := a.blacklist[strings.ToLower(strings.TrimSpace(object.Method))]
 			if ok {
 				return &Error{
-					msg:  fmt.Sprintf("method %s not allowed", object.Method),
+					msg:  fmt.Sprintf("method %s is not allowed", object.Method),
 					code: http.StatusMethodNotAllowed,
 				}
 			}
@@ -122,10 +116,10 @@ func (a *CrossoverBlacklist) blacklisted(req *http.Request) *Error {
 		return nil
 	}
 
-	_, ok := a.blackList[request.Method]
+	_, ok := a.blacklist[strings.ToLower(strings.TrimSpace(request.Method))]
 	if ok {
 		return &Error{
-			msg:  fmt.Sprintf("method %s not allowed", request.Method),
+			msg:  "method is not allowed",
 			code: http.StatusMethodNotAllowed,
 		}
 	}
